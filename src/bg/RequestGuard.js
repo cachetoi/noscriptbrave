@@ -725,13 +725,12 @@
 
   function checkLANRequest(request) {
     if (!ns.isEnforced(request.tabId)) return ALLOW;
-    let {originUrl, url, cookieStoreId} = request;
-    let policy = ns.getPolicy(cookieStoreId);
-    if (originUrl && !Sites.isInternal(originUrl) && url.startsWith("http") &&
-      !policy.can(originUrl, "lan", ns.policyContext(request))) {
+    const { originUrl, url } = request;
+    if (originUrl && !Sites.isInternal(originUrl) && (new URL(url)).hostname &&
+      !ns.getPolicy(request.cookieStoreId).can(originUrl, "lan", ns.policyContext(request))) {
       // we want to block any request whose origin resolves to at least one external WAN IP
       // and whose destination resolves to at least one LAN IP
-      const {proxyInfo} = request; // see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy/ProxyInfo
+      const { proxyInfo } = request; // see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy/ProxyInfo
       const neverDNS = (proxyInfo?.type?.startsWith("http") || proxyInfo?.proxyDNS)
                      || !(UA.isMozilla && DNS.supported);
       if (neverDNS) {
