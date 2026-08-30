@@ -414,8 +414,9 @@ addEventListener("unload", e => {
     debug("popup policy", UI.policy);
     sitesUI = new UI.Sites(document.getElementById("sites"), UI.DEF_PRESETS);
 
-    sitesUI.onChange = (row) => {
-      const reload = sitesUI.anyPermissionsChanged()
+sitesUI.onChange = (row) => {
+  setTimeout(updateCustomSiteStatus, 0);
+  const reload = sitesUI.anyPermissionsChanged()
       pendingReload(reload);
       if (row.tabLess && UI.local.autoReload) {
         messageBox("warning", _("tabLess_reload_warning"));
@@ -502,6 +503,16 @@ addEventListener("unload", e => {
       sitesUI.mainSite = urlToLabel(sitesUI.mainUrl);
       sitesUI.mainDomain = tld.getDomain(sitesUI.mainUrl.hostname);
       sitesUI.mainSiteKey = Sites.optimalKey(sitesUI.mainUrl);
+const customTitle = document.getElementById("custom-shell-title");
+const customSubtitle = document.getElementById("custom-shell-subtitle");
+
+if (customTitle) {
+  customTitle.textContent = sitesUI.mainDomain || sitesUI.mainSite || "Current site";
+}
+
+if (customSubtitle) {
+  customSubtitle.textContent = sitesUI.mainUrl.hostname || sitesUI.mainUrl.href;
+}
       const topDataUrl = sitesUI.mainUrl.protocol == "data:" && sitesUI.mainUrl.href;
 
       if (topDataUrl) {
@@ -511,6 +522,39 @@ addEventListener("unload", e => {
           }
         }
       }
+const customStatus = document.getElementById("custom-shell-status");
+const customDot = document.getElementById("custom-status-dot");
+
+function updateCustomSiteStatus() {
+  const mainRow = document.querySelector(".sites tr.main");
+  const preset = mainRow?.dataset?.preset || "DEFAULT";
+
+  const labels = {
+    TRUSTED: "TRUSTED",
+    T_TRUSTED: "TEMPORARY",
+    UNTRUSTED: "BLOCKED",
+    CUSTOM: "CUSTOM",
+    DEFAULT: "DEFAULT"
+  };
+
+  const dotClasses = {
+    TRUSTED: "trusted",
+    T_TRUSTED: "temporary",
+    UNTRUSTED: "blocked",
+    CUSTOM: "custom",
+    DEFAULT: "default"
+  };
+
+  if (customStatus) {
+    customStatus.textContent = labels[preset] || preset;
+  }
+
+  if (customDot) {
+    customDot.className = dotClasses[preset] || "default";
+  }
+}
+
+setTimeout(updateCustomSiteStatus, 0);
 
       const parsedSeen = seen.map(thing => Object.assign({
           type: thing.policyType,
