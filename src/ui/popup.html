@@ -3,16 +3,17 @@ Copyright (C) 2005-2024 Giorgio Maone <https://maone.net>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta charset="utf-8">
-<title>NoScript</title>
-<meta charset="utf-8">
+<title>NoScript Control</title>
+
 <link rel="stylesheet" href="ui.css" />
 <link rel="stylesheet" href="popup.css" />
+<link rel="stylesheet" href="popup-custom.css" />
+
 <script src="/nscl/lib/browser-polyfill.js"></script>
 <script src="/nscl/common/UA.js"></script>
 <script src="/nscl/common/include.js"></script>
@@ -20,64 +21,292 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <script src="/nscl/common/locale.js"></script>
 <script src="/common/themes.js"></script>
 <script src="/ui/ui.js"></script>
-
 </head>
+
 <body tabindex="-1" id="noscript-popup">
+
 <div id="popup-container">
-<div id="custom-shell-header">
-  <div>
-    <div id="custom-shell-title">NoScript Control</div>
-    <div id="custom-shell-subtitle">Site permissions and script control</div>
+
+  <header id="control-header">
+    <div class="control-brand">
+      <div class="control-brand-mark">NS</div>
+
+      <div>
+        <div class="control-brand-title">NoScript Control</div>
+        <div class="control-brand-subtitle">
+          Script &amp; site permission dashboard
+        </div>
+      </div>
+    </div>
+
+    <div id="control-protection-pill" data-state="loading">
+      PROTECTION
+    </div>
+  </header>
+
+
+  <!-- EXISTING NOSCRIPT TOOLBAR -->
+  <div id="top">
+
+    <button
+      aria-role="button"
+      id="close"
+      class="close icon"
+      title="__MSG_Close__">
+    </button>
+
+    <button
+      aria-role="button"
+      id="reload"
+      class="reload icon"
+      title="__MSG_Reload__">
+    </button>
+
+    <button
+      aria-role="button"
+      id="options"
+      class="options icon"
+      title="__MSG_Options__">
+    </button>
+
+    <div class="hider empty">
+      <button
+        aria-role="button"
+        class="reveal"
+        title="__MSG_Reveal__">…</button>
+
+      <div class="hider-label">__MSG_Hider__</div>
+      <a class="hider-close">×</a>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div id="container-id" class="container-id">
+      __MSG_DefaultContainerName__
+    </div>
+
+    <button
+      aria-role="button"
+      id="enforce"
+      class="toggle icon">
+    </button>
+
+    <button
+      aria-role="button"
+      id="enforce-tab"
+      class="toggle icon">
+    </button>
+
+    <button
+      aria-role="button"
+      id="temp-trust-page"
+      class="toggle icon"
+      title="__MSG_TempTrustPage__">
+    </button>
+
+    <button
+      aria-role="button"
+      id="revoke-temp"
+      class="toggle icon"
+      title="__MSG_RevokeTemp__">
+    </button>
+
   </div>
-</div>
-<div id="custom-build-banner">
-  Custom build active
+
+
+  <!-- OUR CONTROL DASHBOARD -->
+  <section id="control-dashboard" data-state="loading">
+
+    <div class="control-site-row">
+
+      <div id="control-status-dot"></div>
+
+      <div class="control-site-copy">
+
+        <div class="control-site-heading">
+          <span id="control-domain">Loading current site…</span>
+
+          <span id="control-status">
+            LOADING
+          </span>
+        </div>
+
+        <div id="control-url">
+          Waiting for NoScript
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div id="control-explanation">
+      Reading this site's NoScript policy…
+    </div>
+
+
+    <div class="control-section-label">
+      QUICK PERMISSION
+    </div>
+
+    <div id="control-actions">
+
+      <button
+        class="control-action"
+        data-preset="DEFAULT"
+        type="button">
+
+        <strong>Default</strong>
+        <small>Use normal rules</small>
+
+      </button>
+
+
+      <button
+        class="control-action"
+        data-preset="TRUSTED"
+        type="button">
+
+        <strong>Trust</strong>
+        <small>Allow this site</small>
+
+      </button>
+
+
+      <button
+        class="control-action"
+        data-preset="T_TRUSTED"
+        type="button">
+
+        <strong>Temporary</strong>
+        <small>Trust for now</small>
+
+      </button>
+
+
+      <button
+        class="control-action"
+        data-preset="UNTRUSTED"
+        type="button">
+
+        <strong>Block</strong>
+        <small>Explicitly restrict</small>
+
+      </button>
+
+    </div>
+
+
+    <div id="control-metrics">
+
+      <div class="control-metric">
+        <span>Protection</span>
+        <strong id="control-protection">Checking…</strong>
+      </div>
+
+      <div class="control-metric">
+        <span>Sites detected</span>
+        <strong id="control-site-count">—</strong>
+      </div>
+
+      <div class="control-metric">
+        <span>Reload needed</span>
+        <strong id="control-reload-state">NO</strong>
+      </div>
+
+    </div>
+
+
+    <div id="control-reload-notice" hidden>
+      <span>Changes are waiting to be applied.</span>
+      <button id="control-reload-button" type="button">
+        Reload page
+      </button>
+    </div>
+
+  </section>
+
+
+  <!-- ORIGINAL NOSCRIPT DETAILS -->
+  <div id="scrollable">
+
+    <div id="message" class="hidden"></div>
+
+    <div id="high-contrast-chooser" class="opt-group">
+      <span id="highContrast-opt">
+
+        <input
+          type="checkbox"
+          id="opt-highContrast">
+
+        <label
+          for="opt-highContrast"
+          id="lbl-highContrast">
+          __MSG_HighContrast__
+        </label>
+
+      </span>
+    </div>
+
+
+    <div id="incognito-ui-chooser" class="opt-group">
+
+      <span id="overrideTorBrowserPolicy-opt">
+
+        <input
+          type="checkbox"
+          id="opt-overrideTorBrowserPolicy">
+
+        <label
+          for="opt-overrideTorBrowserPolicy"
+          id="lbl-opt-overrideTorBrowserPolicy">
+
+          <span class="tor">
+            __MSG_OptOverrideTorBrowserPolicy__
+          </span>
+
+          <span class="not-tor">
+            __MSG_OptIncognitoPerm__
+          </span>
+
+        </label>
+
+      </span>
+
+    </div>
+
+
+    <div id="xssChoices"></div>
+
+    <div id="content"></div>
+
+
+    <div id="control-advanced-heading">
+
+      <div>
+        <strong>Advanced site permissions</strong>
+
+        <small>
+          NoScript's full per-site controls
+        </small>
+      </div>
+
+      <span>ADVANCED</span>
+
+    </div>
+
+
+    <div id="sites"></div>
+
+    <div id="buttons"></div>
+
+  </div>
+
 </div>
 
-<div id="top">
-  <button aria-role="button" id="close" class="close icon" title="__MSG_Close__"></button>
-  <button aria-role="button" id="reload" class="reload icon" title="__MSG_Reload__"></button>
-  <button aria-role="button" id="options" class="options icon" title="__MSG_Options__"></button>
-<div id="custom-site-chip">
-  <span id="custom-status-dot"></span>
-  <span id="custom-site-name">Current site</span>
-  <span id="custom-shell-status">DEFAULT</span>
-</div>
-  <div class="hider empty">
-    <button aria-role="button" class="reveal" title="__MSG_Reveal__">…</button>
-    <div class="hider-label">__MSG_Hider__</div>
-    <a class="hider-close">×</a>
-  </div>
-  <div class="spacer"></div>
-  <div id="container-id" class="container-id">__MSG_DefaultContainerName__</div>
-  <button aria-role="button" id="enforce" class="toggle icon"></button>
-  <button aria-role="button" id="enforce-tab" class="toggle icon"></button>
-  <button aria-role="button" id="temp-trust-page" class="toggle icon" title="__MSG_TempTrustPage__"></button>
-  <button aria-role="button" id="revoke-temp" class="toggle icon" title="__MSG_RevokeTemp__"></button>
-</div>
 
-<div id="scrollable">
-  <div id="message" class="hidden"></div>
-  <div id="high-contrast-chooser" class="opt-group">
-    <span id="highContrast-opt">
-    <input type="checkbox" id="opt-highContrast">
-    <label for="opt-highContrast" id="lbl-highContrast">__MSG_HighContrast__</label>
-    </span>
-  </div>
-  <div id="incognito-ui-chooser" class="opt-group">
-    <span id="overrideTorBrowserPolicy-opt">
-      <input type="checkbox" id="opt-overrideTorBrowserPolicy">
-        <label for="opt-overrideTorBrowserPolicy" id="lbl-opt-overrideTorBrowserPolicy"
-        ><span class="tor">__MSG_OptOverrideTorBrowserPolicy__</span><span class="not-tor">__MSG_OptIncognitoPerm__</span></label>
-    </span>
-  </div>
-  <div id="xssChoices">
-  </div>
-  <div id="content"></div>
-  <div id="sites"></div>
-  <div id="buttons"></div>
-</div>
-</div>
 <script src="popup.js"></script>
+<script src="popup-custom.js"></script>
+
 </body>
 </html>

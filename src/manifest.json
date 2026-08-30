@@ -87,6 +87,7 @@
       "bg/Settings.js",
       "bg/popupHandler.js",
       "bg/main.js",
+      "bg/toolbar-indicator.js",
       "common/themes.js"
     ],
     "persistent": true
