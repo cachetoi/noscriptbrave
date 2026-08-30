@@ -386,3 +386,79 @@ html:not(.mobile) #scrollable {
 #incognito-ui-chooser input:checked + label {
   color: var(--accent-color);
 }
+#custom-build-banner {
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: 600;
+  border-bottom: 1px solid currentColor;
+}
+#noscript-popup {
+  background: #111318;
+  color: #f3f4f6;
+}
+
+#popup-container {
+  min-width: 390px;
+  background: #111318;
+}
+
+#custom-shell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #181b22;
+  border-bottom: 1px solid #2b303a;
+}
+
+#custom-shell-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+#custom-shell-subtitle {
+  margin-top: 3px;
+  font-size: 11px;
+  opacity: 0.65;
+}
+
+#custom-shell-status {
+  padding: 5px 8px;
+  border: 1px solid #596273;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+#top {
+  padding: 10px 12px;
+  background: #14171d;
+  border-bottom: 1px solid #262b34;
+}
+
+#scrollable {
+  padding: 8px;
+}
+
+.opt-group,
+#xssChoices,
+#content,
+#sites,
+#buttons {
+  background: #171a20;
+  border: 1px solid #282d36;
+  border-radius: 10px;
+  margin: 8px 0;
+  padding: 8px;
+}
+
+button {
+  border-radius: 8px;
+}
+
+#sites {
+  overflow: hidden;
+}
